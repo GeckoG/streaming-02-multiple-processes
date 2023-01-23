@@ -25,13 +25,25 @@ Read the output. Read the code.
 Try to figure out what's going on. 
 
 1. What libraries did we import?
+    sqlite3, time, multiprocessing, os, datetime, platform, sys
 1. Where do we set the task_duration?
+    Immediately after importing the libraries
 1. How many functions are defined? 
+    Seven
 1. What are the function names? 
+    create_table, drop_table, insert_pet, process_one, process_two, process_three, recreate_database
 1. In general, what does each function do? 
+    create_table creates the pets table
+    drop_table deletes the pets table
+    insert_pet connects to the database and inserts a row into the pets table
+    process_one (and two and three) calls two insert_pet functions
+    recreate_database deletes the pets table and replaces it with an empty table
 1. Where does the execution begin?
+    line 132: if __name__ == "__main__":
 1. How many processes do we start?
+    Three
 1. How many records does each process insert?
+    Two
 
 In this first run, we start 3 processes, 
 each inserting 2 records into a shared database 
@@ -96,7 +108,9 @@ Python has pretty helpful error messages.
 When you get an error, read them carefully. 
 
 - What error do you get?
+    sqlite3.OperationalError: database is locked
 - Can you tell what line it was executing when it failed?
+    Both the P2 and P3 users failed to insert their first pets, so when p2.start and p3.start were called, process_two and process_three weren't able to call insert_pet and open a connection, since P1 hadn't closed their connection yet.
 
 
 ## Database Is Locked Error
@@ -104,7 +118,9 @@ When you get an error, read them carefully.
 Do a web search on the sqlite3 'database is locked' error.
 
 - What do you learn?
-- Once a process fails, it crashes the main process and everything stops. 
+    When processes take longer while accessing the database, concurrent processes will fail. You cannot have two open connections at once, so if one fails to close in time, the others will not be able to connect.
+- Once a process fails, it crashes the main process and everything stops.
+    Yep...
 
 ## Deadlock
 
